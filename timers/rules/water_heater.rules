@@ -1,0 +1,113 @@
+val String disableTimerJson = "{\"Arm\":0,\"Mode\":0,\"Time\":\"00:00\",\"Window\":0,\"Days\":\"0000000\",\"Repeat\":0,\"Output\":1,\"Action\":0}"
+
+rule "Fetch Water Heater Timers"
+when
+    // every 5 minutes
+    Time cron "0 0/5 * * * ?" 
+then
+    gWater_Heater_Timers.members.forEach[item | item.sendCommand("")] 
+
+    if (Water_Heater_Timer_1.state == NULL) {
+        logWarn("Fetch Water Heater Timers", "Water_Heater_Timer_1 is NULL.")
+
+        return
+    } else if (Water_Heater_Timer_1.state.toString.equals("")) {
+        logWarn("Fetch Water Heater Timers", "Water_Heater_Timer_1 is empty.")
+
+        return
+    }
+    
+    // Water_Heater_Timer_1.state has to be stored in variable, otherwise error is thrown
+    val String timer1Json = Water_Heater_Timer_1.state.toString
+    var timer1TimeJson = transform("JSONPATH", "$.Timer1.Time", timer1Json)
+    var timer1ActionJson = transform("JSONPATH", "$.Timer1.Action", timer1Json)
+
+    // remove prefix from single digit number for setpoints
+    val Integer timer1Hour = Integer::parseInt(timer1TimeJson.toString.split(":").get(0)) 
+    val Integer timer1Minute = Integer::parseInt(timer1TimeJson.toString.split(":").get(1))
+    val String timer1Action = if (timer1ActionJson.toString == "0") "OFF" else "ON"
+
+    Water_Heater_Timer_1_Hour.postUpdate(timer1Hour)
+    Water_Heater_Timer_1_Minute.postUpdate(timer1Minute)
+    Water_Heater_Timer_1_Action.postUpdate(timer1ActionJson)
+    Water_Heater_Timer_1_Overview.postUpdate(timer1TimeJson + " - " + timer1Action)
+
+    if (Water_Heater_Timer_2.state == NULL) {
+        logWarn("Fetch Water Heater Timers", "Water_Heater_Timer_2 is NULL.")
+
+        return
+    } else if (Water_Heater_Timer_2.state.toString.equals("")) {
+        logWarn("Fetch Water Heater Timers", "Water_Heater_Timer_2 is empty.")
+
+        return
+    }
+    
+    // Water_Heater_Timer_2.state has to be stored in variable, otherwise error is thrown
+    val String timer2Json = Water_Heater_Timer_2.state.toString
+    var timer2TimeJson = transform("JSONPATH", "$.Timer2.Time", timer2Json)
+    var timer2ActionJson = transform("JSONPATH", "$.Timer2.Action", timer2Json)
+
+    // remove prefix from single digit number for setpoints
+    val Integer timer2Hour = Integer::parseInt(timer2TimeJson.toString.split(":").get(0)) 
+    val Integer timer2Minute = Integer::parseInt(timer2TimeJson.toString.split(":").get(1))
+    val String timer2Action = if (timer2ActionJson.toString == "0") "OFF" else "ON"
+
+    Water_Heater_Timer_2_Hour.postUpdate(timer2Hour)
+    Water_Heater_Timer_2_Minute.postUpdate(timer2Minute)
+    Water_Heater_Timer_2_Action.postUpdate(timer2ActionJson)
+    Water_Heater_Timer_2_Overview.postUpdate(timer2TimeJson + " - " + timer2Action)
+end
+
+rule "Update Water Heater Timer 1"
+when
+    Item Water_Heater_Timer_1_Save received command
+then
+    // add prefix for single digit numbers
+    var String timer1Hour =  if (Water_Heater_Timer_1_Hour.state.toString.length == 1) "0" + Water_Heater_Timer_1_Hour.state.toString else Water_Heater_Timer_1_Hour.state.toString
+    var String timer1Minute = if (Water_Heater_Timer_1_Minute.state.toString.length == 1) "0" + Water_Heater_Timer_1_Minute.state.toString else Water_Heater_Timer_1_Minute.state.toString
+    val String timer1Time =  timer1Hour + ":" + timer1Minute
+    var String timer1Action = if (Water_Heater_Timer_1_Action.state == 0) "OFF" else "ON"
+    var timer1Json = "{\"Arm\":1,\"Time\":\"" + timer1Time + "\",\"Window\":0,\"Days\":\"SMTWTFS\",\"Repeat\":1,\"Output\":1,\"Action\":" + Water_Heater_Timer_1_Action.state.toString + "}"
+
+    Water_Heater_Timer_1_Overview.postUpdate(timer1Time + " - " + timer1Action)
+    Water_Heater_Timer_1.sendCommand(timer1Json)
+end
+
+rule "Disable Water Heater Timer 1"
+when
+    Item Water_Heater_Timer_1_Disable received command
+then
+    Water_Heater_Timer_1_Overview.postUpdate("00:00 - OFF")
+    Water_Heater_Timer_1_Hour.postUpdate(0)
+    Water_Heater_Timer_1_Minute.postUpdate(0)
+    Water_Heater_Timer_1_Action.postUpdate(0)
+
+    Water_Heater_Timer_1.sendCommand(disableTimerJson)
+end
+
+rule "Update Water Heater Timer 2"
+when
+    Item Water_Heater_Timer_2_Save received command
+then
+    // add prefix for single digit numbers
+    var String timer2Hour =  if (Water_Heater_Timer_2_Hour.state.toString.length == 1) "0" + Water_Heater_Timer_2_Hour.state.toString else Water_Heater_Timer_2_Hour.state.toString
+    var String timer2Minute = if (Water_Heater_Timer_2_Minute.state.toString.length == 1) "0" + Water_Heater_Timer_2_Minute.state.toString else Water_Heater_Timer_2_Minute.state.toString
+    val String timer2Time =  timer2Hour + ":" + timer2Minute
+    var String timer2Action = if (Water_Heater_Timer_2_Action.state == 0) "OFF" else "ON"
+    var timer2Json = "{\"Arm\":1,\"Time\":\"" + timer2Time + "\",\"Window\":0,\"Days\":\"SMTWTFS\",\"Repeat\":1,\"Output\":1,\"Action\":" + Water_Heater_Timer_2_Action.state.toString + "}"
+
+    Water_Heater_Timer_2_Overview.postUpdate(timer2Time + " - " + timer2Action)
+    Water_Heater_Timer_2.sendCommand(timer2Json)
+end
+
+rule "Disable Water Heater Timer 2"
+when
+    Item Water_Heater_Timer_2_Disable received command
+then
+    Water_Heater_Timer_2_Overview.postUpdate("00:00 - OFF")
+    Water_Heater_Timer_2_Hour.postUpdate(0)
+    Water_Heater_Timer_2_Minute.postUpdate(0)
+    Water_Heater_Timer_2_Action.postUpdate(0)
+
+    Water_Heater_Timer_2.sendCommand(disableTimerJson)
+end

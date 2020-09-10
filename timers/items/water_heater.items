@@ -1,0 +1,16 @@
+Switch    Water_Heater_Switch              "Switch"          <switch>                               {channel="mqtt:topic:local_broker:cellar:water_heater_switch"}
+Switch    Water_Heater_State               "Water Heater"    <water>                                {channel="mqtt:topic:local_broker:cellar:water_heater_state"}
+String    Water_Heater_Timer_1                                            (gWater_Heater_Timers)    {channel="mqtt:topic:local_broker:cellar:water_heater_timer_1"}
+String    Water_Heater_Timer_1_Overview    "Timer 1 [%s]"    <time>
+Number    Water_Heater_Timer_1_Hour        "Hour [%d]"       <time>
+Number    Water_Heater_Timer_1_Minute      "Minute [%d]"     <time>
+Number    Water_Heater_Timer_1_Action      "Action"          <switch>
+Number    Water_Heater_Timer_1_Save        "Save"            <contact>
+Number    Water_Heater_Timer_1_Disable     "Disable"         <error>
+String    Water_Heater_Timer_2                                            (gWater_Heater_Timers)    {channel="mqtt:topic:local_broker:cellar:water_heater_timer_2"}
+String    Water_Heater_Timer_2_Overview    "Timer 2 [%s]"    <time>
+Number    Water_Heater_Timer_2_Hour        "Hour [%d]"       <time>
+Number    Water_Heater_Timer_2_Minute      "Minute [%d]"     <time>
+Number    Water_Heater_Timer_2_Action      "Action"          <switch>
+Number    Water_Heater_Timer_2_Save        "Save"            <contact>
+Number    Water_Heater_Timer_2_Disable     "Disable"         <error>

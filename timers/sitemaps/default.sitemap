@@ -1,0 +1,26 @@
+sitemap default label="Home" { 
+	Frame label="Cellar" { 
+		Group item=Water_Heater_State valuecolor=[=="OFF"="red", =="ON"="green"] { 
+			Switch item=Water_Heater_Switch
+			Text icon="none"
+			Group item=Water_Heater_Timer_1_Overview { 
+				Setpoint item=Water_Heater_Timer_1_Hour minValue=0 maxValue=23 step=1 
+				Setpoint item=Water_Heater_Timer_1_Minute minValue=0 maxValue=59 step=1 
+				Switch item=Water_Heater_Timer_1_Action mappings=[0="OFF", 1="ON"] 
+				Switch item=Water_Heater_Timer_1_Save mappings=[0="CONFIRM"] 
+				Text icon="none"
+				Text icon="none"
+				Switch item=Water_Heater_Timer_1_Disable mappings=[0="DISABLE TIMER"]
+			} 
+			Group item=Water_Heater_Timer_2_Overview { 
+				Setpoint item=Water_Heater_Timer_2_Hour minValue=0 maxValue=23 step=1 
+				Setpoint item=Water_Heater_Timer_2_Minute minValue=0 maxValue=59 step=1 
+				Switch item=Water_Heater_Timer_2_Action mappings=[0="OFF", 1="ON"] 
+				Switch item=Water_Heater_Timer_2_Save mappings=[0="CONFIRM"] 
+				Text icon="none"
+				Text icon="none"
+				Switch item=Water_Heater_Timer_2_Disable mappings=[0="DISABLE TIMER"]
+			} 
+		}  
+	} 
+}

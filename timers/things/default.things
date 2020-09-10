@@ -1,0 +1,9 @@
+Bridge mqtt:broker:local_broker "Local broker"  [host="localhost"] {
+    Thing topic cellar "Cellar" @ "Cellar" {
+        Channels:
+            Type switch : water_heater_switch  [stateTopic="stat/tasmota_ABCXYZ/POWER", commandTopic="cmnd/tasmota_ABCXYZ/POWER"]
+            Type switch : water_heater_state [stateTopic="stat/tasmota_ABCXYZ/POWER"]
+            Type string : water_heater_timer_1 [stateTopic="stat/tasmota_ABCXYZ/RESULT", commandTopic="cmnd/tasmota_ABCXYZ/TIMER1", transformationPattern="REGEX:(.*Timer1.*)∩REGEX:(.*Time.*)∩REGEX:(.*Action.*)"]
+            Type string : water_heater_timer_2 [stateTopic="stat/tasmota_ABCXYZ/RESULT", commandTopic="cmnd/tasmota_ABCXYZ/TIMER2", transformationPattern="REGEX:(.*Timer2.*)∩REGEX:(.*Time.*)∩REGEX:(.*Action.*)"]
+    }
+}
